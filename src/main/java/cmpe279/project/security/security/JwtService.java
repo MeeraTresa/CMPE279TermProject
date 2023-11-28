@@ -1,5 +1,6 @@
 package cmpe279.project.security.security;
 
+import cmpe279.project.security.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
@@ -25,6 +26,7 @@ public class JwtService {
     private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+    private static final String ROLE_KEY_JWT = "role";
 
 
     public String extractUsername(String token){
@@ -51,26 +53,27 @@ public class JwtService {
 
     }
     //To generate token with only user details
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(User user) {
+        return generateToken(new HashMap<>(), user);
     }
     //Generate a token out of extra claims and user details
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails
+            User user
     ) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return buildToken(extraClaims, user, jwtExpiration);
     }
     private String buildToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails,
+            User user,
             long expiration
     ) {
 
         return Jwts.builder()
                 .claims()
-                .subject(userDetails.getUsername())
+                .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
+                .add(ROLE_KEY_JWT, user.getRole())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .add(extraClaims)
                 .and()

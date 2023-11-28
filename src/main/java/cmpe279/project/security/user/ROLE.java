@@ -5,5 +5,6 @@ import jakarta.persistence.Enumerated;
 
 public enum ROLE {
     ADMIN,
-    MANAGER
+    MANAGER,
+    MEMBER
 }
